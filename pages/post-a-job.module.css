@@ -1,0 +1,65 @@
+/* pages/post-a-job.module.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1rem;
+    background-color: black;
+  }
+  
+  .input, .textarea, .select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: white;
+    background-color: darkslategrey;
+  }
+  
+  .skillItem {
+    display: flex;
+    align-items: center;
+    border: 1px solid lightgrey;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+    gap: 0.5rem;
+    color: white;
+  }
+  
+  .submitButton {
+    padding: 1rem;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .submitButton:hover {
+    background-color: #005dbf;
+  }
+  
+  .submitButton:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .selectedSkills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .removeSkill {
+    cursor: pointer;
+    padding: 0.2rem;
+    margin-left: 0.5rem;
+  }

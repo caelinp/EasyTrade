@@ -1,0 +1,9 @@
+/* styles/globals.css */
+html, body, button, input, textarea, select {
+    font-family: sans-serif;
+    color: white;
+}
+
+body {
+    background-color: black;
+}
