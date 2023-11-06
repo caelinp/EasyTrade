@@ -6,6 +6,6 @@ module.exports = {
     // For example, if your GitHub username is `john-doe` and your repository is `my-app`,
     // your base path should be '/my-app'
     basePath: '/EasyTrade',
-    output: 'standalone',
+    output: 'export',
   };
   
