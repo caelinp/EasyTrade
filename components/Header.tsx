@@ -5,25 +5,15 @@ import styles from './Header.module.css';
 const Header = () => {
   return (
     <header className={styles.header}>
-      <div className={styles.home}>
+      <div className={styles.logo}>
         <Link href="/">Home</Link>
       </div>
       <div className={styles.logo}>
         <Link href="/view-jobs">View Job Board</Link>
       </div>
-      <nav className={styles.nav}>
-        <ul>
-          <li>
-            <Link href="/login">Login</Link>
-          </li>
-          <li>
-            <Link href="/signup">Sign Up</Link>
-          </li>
-          <li>
-            <Link href="/profile">Profile</Link>
-          </li>
-        </ul>
-      </nav>
+      <div className={styles.logo}>
+        <Link href="/post-a-job">Create a Job Posting</Link>
+      </div>
     </header>
   );
 };
