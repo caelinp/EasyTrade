@@ -1,0 +1,90 @@
+/* styles/ViewJobs.module.css */
+
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter {
+  flex: 1;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+.filter input, .filter select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: slategrey;
+  color: white;
+}
+
+.filter input::placeholder {
+  color: #ddd
+}
+
+.selectedSkills {
+  display: flex;
+  width: 100%;
+}
+
+.skillItem {
+  display: flex;
+  align-items: center;
+  border: 1px solid lightgrey;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 4px;
+  gap: 0.5rem;
+  color: white;
+  width: fit-content;
+}
+
+.jobs {
+  display: column;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  margin-top: 2rem;
+  border: 2px solid white;
+}
+
+.jobCard {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
+  background-color: slategrey;
+  margin: 1rem;
+}
+
+.jobCard:hover {
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.jobTitle, .jobCity, .jobDescription, .jobDate, .jobPoster {
+  margin-bottom: 0.8rem;
+}
+
+.jobSkills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterInputPlaceholder {
+  color: black; /* Change this to the desired color */
+}
+
+.filterSelectPlaceholder {
+  color: black; /* Change this to the desired color */
+}

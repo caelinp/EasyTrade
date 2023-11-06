@@ -1,6 +1,6 @@
-// pages/post-a-job.tsx
+// pages/PostAJob.tsx
 import { useState } from 'react';
-import styles from './post-a-job.module.css';
+import styles from './PostAJob.module.css';
 
 const PROFESSIONS = [
     'Electrician',
