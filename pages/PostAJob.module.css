@@ -26,6 +26,13 @@
   box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
+.textarea {
+  resize: none; /* This will prevent resizing of the textarea */
+  width: 100%; /* Set a fixed width if you want, or use percentage to fill the container */
+  height: 120px; /* Set a fixed height */
+  /* Other styles */
+}
+
 .skillItem {
   display: flex;
   align-items: center;
