@@ -128,10 +128,14 @@
   color: black; /* Change this to the desired color */
 }
 
+@media only screen and (max-width: 500px) {
+  .jobDetailsPanels {
+    flex-direction: column;
+  }
+}
+
 @media only screen and (max-width: 600px) {
   .durationFilter {
     flex-direction: column;
   }
-
-
 }
