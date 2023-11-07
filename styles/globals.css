@@ -7,3 +7,7 @@ html, body, button, input, textarea, select {
 body {
     background-color: black;
 }
+
+:root {
+    --header-height: 40px;
+  }

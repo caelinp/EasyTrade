@@ -3,7 +3,13 @@
 .container {
   padding: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: calc(2 * var(--header-height)) auto;
+}
+
+.jobBoardHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 3rem;
 }
 
 .filters {
@@ -27,15 +33,23 @@
   border-radius: 4px;
   background-color: slategrey;
   color: white;
+  margin-bottom: 1rem;
 }
 
 .filter input::placeholder {
   color: #ddd
 }
 
+.durationFilter {
+  margin-top: 1rem;
+  display: flex;
+  gap: 2rem;
+}
+
 .selectedSkills {
   display: flex;
-  width: 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .skillItem {
@@ -50,10 +64,15 @@
   width: fit-content;
 }
 
+.removeSkill {
+  cursor: pointer;
+  padding: 0.2rem;
+  margin-left: 0.5rem;
+}
+
 .jobs {
   display: column;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   margin-top: 2rem;
   border: 2px solid white;
 }
@@ -71,7 +90,7 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.jobTitle, .jobCity, .jobDescription, .jobDate, .jobPoster {
+.jobTitle, .jobCity, .jobDescription, .jobDate, .jobPoster, .jobDuration {
   margin-bottom: 0.8rem;
 }
 
@@ -87,4 +106,12 @@
 
 .filterSelectPlaceholder {
   color: black; /* Change this to the desired color */
+}
+
+@media only screen and (max-width: 600px) {
+  .durationFilter {
+    flex-direction: column;
+  }
+
+
 }

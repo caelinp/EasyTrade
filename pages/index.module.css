@@ -4,6 +4,7 @@
     flex-direction: column;
     align-items: center;
     padding: 2rem;
+    margin-top: calc(2 * var(--header-height));
 }
 
 .mainHeader, .subHeader, .description {

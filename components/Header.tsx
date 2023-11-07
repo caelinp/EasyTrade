@@ -9,10 +9,10 @@ const Header = () => {
         <Link href="/">Home</Link>
       </div>
       <div className={styles.logo}>
-        <Link href="/view-jobs">View Job Board</Link>
+        <Link href="/view-jobs">Job Board</Link>
       </div>
       <div className={styles.logo}>
-        <Link href="/post-a-job">Create a Job Posting</Link>
+        <Link href="/post-a-job">Post New Job</Link>
       </div>
     </header>
   );
