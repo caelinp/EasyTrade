@@ -135,15 +135,15 @@ const FAKE_JOBS: Job[] = [
 const durationToDays = (duration: string) => {
   switch (duration) {
     case '1 day': return 1;
-    case '2-3 days': return 2;
-    case '3-4 days': return 3;
-    case 'less than 1 week': return 5;
-    case '1-2 weeks': return 7;
-    case '2-3 weeks': return 14;
-    case 'less than 1 month': return 21;
-    case '1-2 months': return 30;
-    case '2+ months': return 60;
-    default: return 1000;
+    case '2-3 days': return 3;
+    case '3-4 days': return 4;
+    case 'less than 1 week': return 6;
+    case '1-2 weeks': return 14;
+    case '2-3 weeks': return 21;
+    case 'less than 1 month': return 29;
+    case '1-2 months': return 60;
+    case '2+ months': return 61;
+    default: return null;
   }
 };
 
@@ -151,6 +151,9 @@ const isDurationInRange = (jobDuration: string, minDuration: string, maxDuration
   const jobDays = durationToDays(jobDuration);
   const minDays = durationToDays(minDuration);
   const maxDays = durationToDays(maxDuration);
+  if (jobDays == null) {
+    return false;
+  }
 
   return (minDays === null || jobDays >= minDays) && (maxDays === null || jobDays <= maxDays);
 };
@@ -184,7 +187,7 @@ const ViewJobs: React.FC = () => {
       const minDays = durationToDays(minDuration);
       setMaxDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
         const days = durationToDays(duration);
-        return days === null || days > minDays;
+        return days === null || days > minDays!;
       })]);
     } else {
       setMaxDurationOptions(['Any', ...ESTIMATED_DURATIONS]);
@@ -196,7 +199,7 @@ const ViewJobs: React.FC = () => {
       const maxDays = durationToDays(maxDuration);
       setMinDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
         const days = durationToDays(duration);
-        return days === null || days < maxDays;
+        return days === null || days < maxDays!;
       })]);
     } else {
       setMinDurationOptions(['Any', ...ESTIMATED_DURATIONS]);
@@ -232,20 +235,20 @@ const ViewJobs: React.FC = () => {
       job.city.toLowerCase().includes(cityFilter.toLowerCase()) &&
       (skillFilter.length === 0 || job.skills.some(skill => skillFilter.includes(skill))) &&
       (job.title.toLowerCase().includes(keywordFilter.toLowerCase()) || job.description.toLowerCase().includes(keywordFilter.toLowerCase())) &&
-      isJobWithinDateRange(job, dateFilter)&&
+      isJobWithinDateRange(job, dateFilter) &&
       isDurationInRange(job.estimatedDuration, minDuration, maxDuration)
     );
   });
+
 
   return (
     <div className={styles.container}>
       <h1 className={styles.jobBoardHeader}>Job Board</h1>
 
-      <div className={styles.filters}>
-
+      <div className={styles.filtersPanel} id={styles.filtersFirstRow}>
         {/* Keywords Filter */}
         <div className={styles.filter}>
-          <label>Filter by keywords:</label>
+          <label>Search All Jobs:</label>
           <input
             type="text"
             placeholder="Search by keywords"
@@ -256,7 +259,7 @@ const ViewJobs: React.FC = () => {
 
         {/* City Filter */}
         <div className={styles.filter}>
-          <label>Filter by city:</label>
+          <label>Filter by City:</label>
           <input
             type="text"
             placeholder="Search by City"
@@ -276,7 +279,9 @@ const ViewJobs: React.FC = () => {
             ))}
           </select>
         </div>
-            
+      </div>
+      <div className={styles.filtersPanel}>
+        {/* Skills Filter */}
         <div className={styles.filter}>
           <label>Filter by skills needed:</label>
           <select className={styles.skillSelect} onChange={handleSkillSelect} value="">
@@ -289,7 +294,8 @@ const ViewJobs: React.FC = () => {
               ))}
           </select>
         </div>
-
+      </div>
+      <div className={styles.filtersPanel}>
         <div className={styles.selectedSkills}>
         {skillFilter.map(skill => (
               <div key={skill} className={styles.skillItem}>
@@ -298,49 +304,66 @@ const ViewJobs: React.FC = () => {
               </div>
               ))}
         </div>
-        
+      </div>
+      <div className={styles.filtersPanel}>  
         {/* Filter by Minimum Estimated Duration */}
-        <label>Filter by estimated duration:</label>
-        <div className={styles.durationFilter}>
-          <div className={styles.filter}>
-            <label>From:</label>
-            <select className={styles.durationSelect} value={minDuration} onChange={e => setMinDuration(e.target.value)}>
-              {minDurationOptions.map(duration => (
-                <option key={duration} value={duration}>{duration}</option>
-              ))}
-            </select>
-          </div>
+        <div className={styles.durationFilters}>
+          <label>Filter by estimated duration:</label>
+          <div className={styles.durationFilter}>
+            <div className={styles.filter}>
+              <label>From:</label>
+              <select className={styles.durationSelect} value={minDuration} onChange={e => setMinDuration(e.target.value)}>
+                {minDurationOptions.map(duration => (
+                  <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filter by Maximum Estimated Duration */}
-          <div className={styles.filter}>
-            <label>To:</label>
-            <select className={styles.durationSelect} value={maxDuration} onChange={e => setMaxDuration(e.target.value)}>
-              {maxDurationOptions.map(duration => (
-                <option key={duration} value={duration}>{duration}</option>
-              ))}
-            </select>
+            {/* Filter by Maximum Estimated Duration */}
+            <div className={styles.filter}>
+              <label>To:</label>
+              <select className={styles.durationSelect} value={maxDuration} onChange={e => setMaxDuration(e.target.value)}>
+                {maxDurationOptions.map(duration => (
+                  <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
+    </div>
+
+
 
         {/* Job Cards */}
         <h1>Filtered Jobs:</h1>
         <div className={styles.jobs}>
           {filteredJobs.map(job => (
             <div key={job.id} className={styles.jobCard}>
-              <h3 className={styles.jobTitle}>{job.title}</h3>
-              <p className={styles.jobCity}>City: {job.city}</p>
-              <p className={styles.jobDescription}>{job.description}</p>
-              <p className={styles.jobDate}>Date posted: {job.datePosted}</p>
-              <p className={styles.jobPoster}>Posted by: {job.posterFirstName}</p>
-              <div className={styles.jobSkills}>
-                {job.skills.map(skill => (
-                  <span key={skill} className={styles.skillItem}>{skill}</span>
-                ))}
+              <h2 className={styles.jobTitle}>{job.title}</h2>
+              <div className={styles.jobDetailsPanels}>
+                <div className={styles.jobDetailsPanelLeft}>
+                  <h3>City:</h3>
+                  <p className={styles.jobCity}>{job.city}</p>
+                  <h3>Date posted:</h3>
+                  <p className={styles.jobDate}>{job.datePosted}</p>
+                  <h3>Posted by:</h3>
+                  <p className={styles.jobPoster}>{job.posterFirstName}</p>
+                  <h3>Estimated Duration:</h3>
+                  <p className={styles.jobDuration}>{job.estimatedDuration}</p>
+                </div>
+                <div className={styles.jobDetailsPanelRight}>
+                  <h3>Description:</h3>
+                  <p className={styles.jobDescription}>{job.description}</p>
+                  <h3>Skills needed:</h3>
+                  <div className={styles.jobSkills}>
+                    {job.skills.map(skill => (
+                      <span key={skill} className={styles.skillItem}>{skill}</span>
+                    ))}
+                </div>
+                </div>
               </div>
-              <p className={styles.jobDuration}>Estimated Duration: {job.estimatedDuration}</p>
             </div>
           ))}
-        </div>
       </div>
     </div>
   );
