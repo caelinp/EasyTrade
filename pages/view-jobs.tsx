@@ -183,6 +183,23 @@ const ViewJobs: React.FC = () => {
   const [maxDurationOptions, setMaxDurationOptions] = useState<string[]>(['Any', ...ESTIMATED_DURATIONS]);
 
   useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/getJobs');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const jobs = await response.json();
+        console.log(jobs); // Log the entire response
+      } catch (error) {
+        console.error("Error getting jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []); // Empty dependency array ensures this runs once on mount
+
+  useEffect(() => {
     if (minDuration !== 'Any') {
       const minDays = durationToDays(minDuration);
       setMaxDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {

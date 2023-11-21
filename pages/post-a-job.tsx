@@ -1,6 +1,8 @@
 // pages/PostAJob.tsx
 import { useState } from 'react';
 import styles from './PostAJob.module.css';
+import { functions } from '../firebase.config';
+import { httpsCallable } from 'firebase/functions';
 
 const PROFESSIONS = [
     'Electrician',
@@ -41,15 +43,18 @@ const PROFESSIONS = [
     firstName: string;
     lastName: string;
     email: string;
-    streetAddress: string;
+    address: string;
     city: string;
+    provinceState: string;
     country: string;
     postalCode: string;
     phoneNumber: string;
-    jobTitle: string;
-    jobDescription: string;
-    professionalSkills: string[];
-    estimatedDuration: string;
+    title: string;
+    description: string;
+    duration: string;
+    budget: string;
+    skills: string[];
+
   }
   
 
@@ -58,15 +63,17 @@ const PostAJob = () => {
       firstName: '',
       lastName: '',
       email: '',
-      streetAddress: '',
+      address: '',
       city: '',
+      provinceState: '',
       country: '',
       postalCode: '',
       phoneNumber: '',
-      jobTitle: '',
-      jobDescription: '',
-      professionalSkills: [],
-      estimatedDuration:''
+      title: '',
+      description: '',
+      duration:'',
+      budget:'',
+      skills: [],
     });
 
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -93,7 +100,7 @@ const PostAJob = () => {
       setSelectedSkills(prev => [...prev, skill]);
       setFormData(prev => ({
         ...prev,
-        professionalSkills: [...prev.professionalSkills, skill]
+        skills: [...prev.skills, skill]
       }));
     }
   };
@@ -102,15 +109,32 @@ const PostAJob = () => {
     setSelectedSkills(prev => prev.filter(skill => skill !== skillToRemove));
     setFormData(prev => ({
       ...prev,
-      professionalSkills: prev.professionalSkills.filter(skill => skill !== skillToRemove)
+      skills: prev.skills.filter(skill => skill !== skillToRemove)
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/addJob', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      console.error("Error adding job:", error);
+    }
   };
 
-  const isFormComplete = Object.values(formData).every(value => value !== '') && formData.professionalSkills.length > 0;
+  const isFormComplete = Object.values(formData).every(value => value !== '') && formData.skills.length > 0;
 
   return (
     <div className={styles.container}>
@@ -132,7 +156,7 @@ const PostAJob = () => {
 
         <div className={styles.formGroup}>
           <label>Street Address:</label>
-          <input className={styles.input} type="text" name="streetAddress" value={formData.streetAddress} onChange={handleInputChange} required />
+          <input className={styles.input} type="text" name="address" value={formData.address} onChange={handleInputChange} required />
         </div>
 
         <div className={styles.formGroup}>
@@ -141,9 +165,15 @@ const PostAJob = () => {
         </div>
 
         <div className={styles.formGroup}>
+          <label>Province/State:</label>
+          <input className={styles.input} type="text" name="provinceState" value={formData.provinceState} onChange={handleInputChange} required />
+        </div>
+
+        <div className={styles.formGroup}>
           <label>Country:</label>
           <input className={styles.input} type="text" name="country" value={formData.country} onChange={handleInputChange} required />
         </div>
+
 
         <div className={styles.formGroup}>
           <label>Postal Code:</label>
@@ -157,20 +187,20 @@ const PostAJob = () => {
 
         <div className={styles.formGroup}>
           <label>Job Title:</label>
-          <input className={styles.input} type="text" name="jobTitle" value={formData.jobTitle} onChange={handleInputChange} required />
+          <input className={styles.input} type="text" name="title" value={formData.title} onChange={handleInputChange} required />
         </div>
 
         <div className={styles.formGroup}>
           <label>Job Description:</label>
-          <textarea className={styles.textarea} name="jobDescription" value={formData.jobDescription} onChange={handleInputChange} required></textarea>
+          <textarea className={styles.textarea} name="description" value={formData.description} onChange={handleInputChange} required></textarea>
         </div>
 
         <div className={styles.formGroup}>
           <label>Estimated Duration:</label>
           <select 
               className={styles.select} 
-              name="estimatedDuration"
-              value={formData.estimatedDuration} 
+              name="duration"
+              value={formData.duration} 
               onChange={handleSelectChange}
               required
           >
@@ -181,6 +211,10 @@ const PostAJob = () => {
                   </option>
               ))}
           </select>
+        </div>
+        <div className={styles.formGroup}>
+          <label>Estimated Budget:</label>
+          <input className={styles.input} name="budget" type="text" value={formData.budget} onChange={handleInputChange} required></input>
         </div>
 
         <div className={styles.formGroup}>
