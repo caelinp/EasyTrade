@@ -26,6 +26,18 @@
   box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
+/* For Chrome, Safari, Edge, and Opera */
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+.input {
+  -moz-appearance: textfield;
+}
+
 .textarea {
   resize: none; /* This will prevent resizing of the textarea */
   width: 100%; /* Set a fixed width if you want, or use percentage to fill the container */
@@ -89,4 +101,16 @@
   cursor: pointer;
   padding: 0.2rem;
   margin-left: 0.5rem;
+}
+/* For Chrome, Safari, Edge, and Opera */
+#budget::-webkit-inner-spin-button,
+#budget::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+#budget {
+  background-color: black;
+  -moz-appearance: textfield;
 }
