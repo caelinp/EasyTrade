@@ -21,7 +21,7 @@ interface JobSchema {
   provinceState: string;
   skills: string[];
   title: string;
-  timestamp: string;
+  timestamp: admin.firestore.Timestamp;
   numLeadsTotal: string;
   numLeadsPurchased: string;
 }
@@ -41,7 +41,7 @@ const jobSchema: JobSchema = {
   provinceState: "",
   skills: [],
   title: "",
-  timestamp: "",
+  timestamp: new admin.firestore.Timestamp(0, 0),
   numLeadsTotal: "",
   numLeadsPurchased: ""
 };
@@ -57,7 +57,7 @@ interface JobSummarySchema {
   provinceState: string;
   skills: string[];
   title: string;
-  timestamp: string;
+  timestamp: Date;
   numLeadsTotal: string;
   numLeadsPurchased: string;
 }
@@ -76,8 +76,8 @@ app.post("/addJob", async (req, res) => {
     }
   }
 
-  const now = new Date();
-  jobData.timestamp = now.toISOString();
+  const now = admin.firestore.Timestamp.now();
+  jobData.timestamp = now;
   jobData.numLeadsTotal = (NUM_LEADS_INITIAL).toString();
   jobData.numLeadsPurchased = "0";
 
@@ -95,33 +95,33 @@ app.get("/getJobs", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 10;
     const startAfter = req.query.startAfter as string;
+    let query = admin.firestore().collection("jobs").orderBy("timestamp");
 
     // Filter parameters
     const keywords = req.query.keywords as string;
     const city = req.query.city as string;
-    const skills = req.query.skills as string[]
+    const skills = req.query.skills as string
     const minDuration = parseInt(req.query.minDuration as string);
     const maxDuration = parseInt(req.query.maxDuration as string);
     const daysSincePosted = parseInt(req.query.daysSincePosted as string);
 
-    let query = admin.firestore().collection("jobs").orderBy("timestamp");
-
     // Apply filters
     if (keywords) {
-      query = query.where('title', 'array-contains-any', keywords.split(' '))
-        .where('description', 'array-contains-any', keywords.split(' '));
+      query = query.where('title', 'array-contains-any', keywords.split(/\s+/))
+        .where('description', 'array-contains-any', keywords.split(/\s+/));
     }
     if (city) {
       query = query.where('city', '==', city);
     }
     if (skills) {
-      skills.forEach(skill => {
-        query = query.where('skills', 'array-contains', skill.trim());
-      });
+      let skillArray = skills.split(",")
+      query = query.where('skills', 'array-contains-any', skillArray);
     }
-    if (!isNaN(minDuration) && !isNaN(maxDuration)) {
+    if (!isNaN(minDuration)) {
       query = query.where('duration', '>=', minDuration)
-        .where('duration', '<=', maxDuration);
+    }
+    if (!isNaN(maxDuration)) {
+      query = query.where('duration', '<=', maxDuration);
     }
     if (!isNaN(daysSincePosted)) {
       const dateLimit = admin.firestore.Timestamp.fromDate(new Date(Date.now() - daysSincePosted * 24 * 60 * 60 * 1000));
@@ -151,7 +151,7 @@ app.get("/getJobs", async (req, res) => {
         provinceState: jobData.provinceState,
         skills: jobData.skills,
         title: jobData.title,
-        timestamp: jobData.timestamp,
+        timestamp: jobData.timestamp.toDate(),
         numLeadsTotal: jobData.numLeadsTotal,
         numLeadsPurchased: jobData.numLeadsPurchased
       };

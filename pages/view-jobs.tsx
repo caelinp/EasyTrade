@@ -167,29 +167,37 @@ const FAKE_JOBS: Job[] = [
   }
 ];
 
-const durationToDays = (duration: string) => {
-  switch (duration) {
-    case '1 day': return 1;
-    case '2-3 days': return 3;
-    case '3-4 days': return 4;
-    case 'less than 1 week': return 6;
-    case '1-2 weeks': return 14;
-    case '2-3 weeks': return 21;
-    case 'less than 1 month': return 29;
-    case '1-2 months': return 60;
-    case '2+ months': return 61;
-    default: return null;
-  }
+const durationToDays: { [key: string]: number } = {
+  '1 day': 1,
+  '2-3 days': 3,
+  '3-4 days': 4,
+  'less than 1 week': 6,
+  '1-2 weeks': 14,
+  '2-3 weeks': 21,
+  'less than 1 month': 29,
+  '1-2 months': 60,
+  '2+ months': 61
+};
+
+const daysToDuration: { [key: string]: string } = {
+  '1': '1 day',
+  '3': '2-3 days',
+  '4': '3-4 days',
+  '6': 'less than 1 week',
+  '14': '1-2 weeks',
+  '21': '2-3 weeks',
+  '29': 'less than 1 month',
+  '60': '1-2 months',
+  '61': '2+ months'
 };
 
 const isDurationInRange = (jobDuration: string, minDuration: string, maxDuration: string) => {
-  const jobDays = durationToDays(jobDuration);
-  const minDays = durationToDays(minDuration);
-  const maxDays = durationToDays(maxDuration);
+  const jobDays = durationToDays[jobDuration];
+  const minDays = durationToDays[minDuration];
+  const maxDays = durationToDays[maxDuration];
   if (jobDays == null) {
     return false;
   }
-
   return (minDays === null || jobDays >= minDays) && (maxDays === null || jobDays <= maxDays);
 };
 
@@ -222,6 +230,9 @@ const ViewJobs: React.FC = () => {
   const [jobsShown, setJobsShown] = useState<Job[]>([])
 
   const populateJobBoard = (jobs: any) => {
+    if (jobs == null) {
+      return;
+    }
     let jobObjects: Job[]= []
     for (const job of jobs) {
       const jobObject: Job = 
@@ -233,7 +244,7 @@ const ViewJobs: React.FC = () => {
         datePosted: new Date(job.timestamp),
         posterFirstName: job.firstName,
         skills: job.skills,
-        estimatedDuration: job.duration,
+        estimatedDuration: daysToDuration[job.duration],
         estimatedBudget: job.budget,
         numLeadsTotal: job.numLeadsTotal,
         numLeadsPurchased: job.numLeadsPurchased
@@ -253,7 +264,31 @@ const ViewJobs: React.FC = () => {
         url.searchParams.append('startAfter', nextPageToken);
       }
       url.searchParams.append('limit', resultsLimit.toString());
-  
+
+      if (keywordFilter != "") {
+        url.searchParams.append("keywords", keywordFilter);
+      }
+
+      if (cityFilter != "") {
+        url.searchParams.append("city", cityFilter);
+      }
+
+      if (skillFilter.length != 0) {
+        url.searchParams.append("skills", skillFilter.join(","));
+      }
+
+      if (dateFilter != "allTime") {
+        url.searchParams.append("daysSincePosted", dateFilterOptions[dateFilter]!.toString());
+      }
+
+      if (minDuration != "Any") {
+        url.searchParams.append("minDuration", durationToDays[minDuration]!.toString());
+      }
+
+      if (maxDuration != "Any") {
+        url.searchParams.append("maxDuration", durationToDays[maxDuration]!.toString());
+      }
+      console.log(url)
       const response = await fetch(url);
   
       if (!response.ok) {
@@ -289,9 +324,9 @@ const ViewJobs: React.FC = () => {
 
   useEffect(() => {
     if (minDuration !== 'Any') {
-      const minDays = durationToDays(minDuration);
+      const minDays = durationToDays[minDuration];
       setMaxDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
-        const days = durationToDays(duration);
+        const days = durationToDays[duration];
         return days === null || days > minDays!;
       })]);
     } else {
@@ -301,9 +336,9 @@ const ViewJobs: React.FC = () => {
 
   useEffect(() => {
     if (maxDuration !== 'Any') {
-      const maxDays = durationToDays(maxDuration);
+      const maxDays = durationToDays[maxDuration];
       setMinDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
-        const days = durationToDays(duration);
+        const days = durationToDays[duration];
         return days === null || days < maxDays!;
       })]);
     } else {
@@ -315,7 +350,7 @@ const ViewJobs: React.FC = () => {
     const rangeValue = dateFilterOptions[range];
     if (rangeValue === null) return true;
 
-    const jobDate = new Date(job.datePosted);
+    const jobDate = job.datePosted;
     const currentDate = new Date();
     const diffTime = Math.abs(currentDate.getTime() - jobDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -399,7 +434,9 @@ const ViewJobs: React.FC = () => {
             ))}
           </select>
         </div>
+        <button className={styles.searchButton} onClick={fetchJobs}>Search</button>
       </div>
+      
       <div className={styles.filtersPanel}>
         <div className={styles.selectedSkills}>
           {skillFilter.map(skill => (
@@ -439,7 +476,7 @@ const ViewJobs: React.FC = () => {
       {/* Job Cards */}
       <h1>Filtered Jobs:</h1>
       <div className={styles.jobs}>
-        {filteredJobs.map(job => (
+        {jobsShown.map(job => (
           <div key={job.id} className={styles.jobCard}>
             <h2 className={styles.jobTitle}>{job.title}</h2>
             <div className={styles.jobDetailsPanels}>

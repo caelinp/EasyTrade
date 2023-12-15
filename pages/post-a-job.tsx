@@ -56,6 +56,30 @@ type FormData = {
 
 }
 
+const durationToDays: { [key: string]: number } = {
+  '1 day': 1,
+  '2-3 days': 3,
+  '3-4 days': 4,
+  'less than 1 week': 6,
+  '1-2 weeks': 14,
+  '2-3 weeks': 21,
+  'less than 1 month': 29,
+  '1-2 months': 60,
+  '2+ months': 61
+};
+
+const daysToDuration: { [key: string]: string } = {
+  '1': '1 day',
+  '3': '2-3 days',
+  '4': '3-4 days',
+  '6': 'less than 1 week',
+  '14': '1-2 weeks',
+  '21': '2-3 weeks',
+  '29': 'less than 1 month',
+  '60': '1-2 months',
+  '61': '2+ months'
+};
+
 const PostAJob = () => {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -76,12 +100,20 @@ const PostAJob = () => {
   });
 
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-
+  
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleDurationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: durationToDays[value]
     }));
   };
 
@@ -200,8 +232,8 @@ const PostAJob = () => {
         <select
           className={styles.select}
           name="duration"
-          value={formData.duration}
-          onChange={handleSelectChange}
+          value={daysToDuration[formData.duration]}
+          onChange={handleDurationChange}
           required
         >
           <option value="" disabled>Select duration</option>
