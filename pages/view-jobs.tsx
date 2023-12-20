@@ -229,7 +229,7 @@ const ViewJobs: React.FC = () => {
   const [resultsLimit, setResultsLimit] = useState(DEFAULT_RESULT_LIMIT)
   const [jobsShown, setJobsShown] = useState<Job[]>([])
 
-  const populateJobBoard = (jobs: any) => {
+  const populateJobBoard = (jobs: any, moreResults: boolean=false) => {
     if (jobs == null) {
       return;
     }
@@ -251,16 +251,20 @@ const ViewJobs: React.FC = () => {
       }
       jobObjects.push(jobObject)
     }
-    setJobsShown(jobsShown.concat(jobObjects))
+    if (moreResults) {
+      setJobsShown(jobsShown.concat(jobObjects))
+    } else {
+      setJobsShown(jobObjects)
+    }
     
   }
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (moreResults: boolean=false) => {
     try {
       const url = new URL('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/getJobs');
   
       // Add query parameters if they are provided
-      if (nextPageToken) {
+      if (nextPageToken && moreResults) {
         url.searchParams.append('startAfter', nextPageToken);
       }
       url.searchParams.append('limit', resultsLimit.toString());
@@ -295,6 +299,11 @@ const ViewJobs: React.FC = () => {
         if (response.status === 404) {
           console.log("No more results");
           setMoreResultsVisible(false);
+          // if moreResults is false, then this was from a search button press. should clear filtered jobs if search gave no results
+          if (!moreResults)
+          {
+            setJobsShown([])
+          }
         } else {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -310,7 +319,7 @@ const ViewJobs: React.FC = () => {
         setMoreResultsVisible(false);
       }
   
-      populateJobBoard(jobs.jobs);
+      populateJobBoard(jobs.jobs, moreResults);
   
     } catch (error) {
       console.error("Error getting jobs:", error);
@@ -365,6 +374,15 @@ const ViewJobs: React.FC = () => {
       setSkillFilter(prev => [...prev, skill]);
     }
   };
+
+  const handleSearch = async () => {
+    setNextPageToken(null)
+    fetchJobs()
+  }
+
+  const handleMoreResults = () => {
+    fetchJobs(true)
+  }
 
   const handleSkillRemove = (skillToRemove: string) => {
     setSkillFilter(prev => prev.filter(skill => skill !== skillToRemove));
@@ -434,7 +452,7 @@ const ViewJobs: React.FC = () => {
             ))}
           </select>
         </div>
-        <button className={styles.searchButton} onClick={fetchJobs}>Search</button>
+        <button className={styles.searchButton} onClick={handleSearch}>Search</button>
       </div>
       
       <div className={styles.filtersPanel}>
@@ -509,8 +527,8 @@ const ViewJobs: React.FC = () => {
         ))}
       </div>
       <div className={styles.moreResultsContainer}>
-        {moreResultsVisible && <button className={styles.moreButton} onClick={fetchJobs}>More Results</button>}
-        {!moreResultsVisible && <h2 className={styles.noResults} >No More Results</h2>}
+        {moreResultsVisible && <button className={styles.moreButton} onClick={handleMoreResults}>More Results</button>}
+        {!moreResultsVisible && <h2 className={styles.noResults} >{jobsShown.length ? "No More Results" : "No Results"}</h2>}
       </div>
     </div>
   );

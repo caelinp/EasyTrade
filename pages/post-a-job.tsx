@@ -94,7 +94,7 @@ const PostAJob = () => {
     phoneNumber: '',
     title: '',
     description: '',
-    duration: '',
+    duration: '1 day',
     budget: '',
     skills: [],
   });
@@ -114,14 +114,6 @@ const PostAJob = () => {
     setFormData(prev => ({
       ...prev,
       [name]: durationToDays[value]
-    }));
-  };
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
     }));
   };
 
@@ -205,7 +197,6 @@ const PostAJob = () => {
         <label>Country:</label>
         <input className={styles.input} type="text" name="country" value={formData.country} onChange={handleInputChange} required />
       </div>
-
 
       <div className={styles.formGroup}>
         <label>Postal Code:</label>
