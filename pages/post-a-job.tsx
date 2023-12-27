@@ -94,7 +94,7 @@ const PostAJob = () => {
     phoneNumber: '',
     title: '',
     description: '',
-    duration: '1 day',
+    duration: '1',
     budget: '',
     skills: [],
   });
