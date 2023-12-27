@@ -21,22 +21,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Set up Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          # Cache dependencies for the Next.js app only
           cache: 'npm'
 
+      # Install dependencies excluding the functions directory
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
         env:
+          # Use this to prevent postinstall scripts from running which might touch the functions directory
           CI: true
 
+      # Build Next.js application
       - name: Build with Next.js
         run: npx --no-install next build
 
-      # The export is handled automatically by the 'output: "export"' in next.config.js
+      # Export Next.js application to static HTML
+      - name: Static HTML export with Next.js
+        run: npx --no-install next export
 
+      # Upload the 'out' directory as an artifact for deployment job to pick up
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -53,5 +62,6 @@ jobs:
         with:
           name: nextjs-site
 
+      # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
