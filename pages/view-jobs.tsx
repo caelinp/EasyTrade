@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ViewJobs.module.css';
 
+const DEFAULT_RESULT_LIMIT = 2;
+
 interface Job {
   id: number;
   title: string;
   city: string;
   description: string;
-  datePosted: string;
+  datePosted: Date;
   posterFirstName: string;
   skills: string[];
   estimatedDuration: string;
+  estimatedBudget: string; 
+  numLeadsTotal: string;
+  numLeadsPurchased: string;
 }
 
 const PROFESSIONS: string[] = [
-  'Electrician', 'Carpenter', 'Locksmith', 'Plumber', 'Landscaper', 
+  'Electrician', 'Carpenter', 'Locksmith', 'Plumber', 'Landscaper',
   'Tiler', 'HVAC Technician', 'Painter', 'Flooring Specialist', 'Roofer'
 ];
 
@@ -30,131 +35,169 @@ const ESTIMATED_DURATIONS: string[] = [
 ];
 
 const FAKE_JOBS: Job[] = [
-  { 
-    id: 1, 
-    title: 'Electrician needed', 
-    city: 'Los Angeles', 
-    description: 'Fix some wires', 
-    datePosted: '2023-10-30', 
-    posterFirstName: 'John', 
+  {
+    id: 1,
+    title: 'Electrician needed',
+    city: 'Los Angeles',
+    description: 'Fix some wires',
+    datePosted: new Date('2023-10-30'),
+    posterFirstName: 'John',
     skills: ['Electrician'],
-    estimatedDuration: '2-3 days'
+    estimatedDuration: '2-3 days',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 2, 
-    title: 'Carpenter for furniture', 
-    city: 'New York', 
-    description: 'Build a table and chairs', 
-    datePosted: '2023-10-29', 
-    posterFirstName: 'Jane', 
+  {
+    id: 2,
+    title: 'Carpenter for furniture',
+    city: 'New York',
+    description: 'Build a table and chairs',
+    datePosted: new Date('2023-10-29'),
+    posterFirstName: 'Jane',
     skills: ['Carpenter'],
-    estimatedDuration: '1-2 weeks'
+    estimatedDuration: '1-2 weeks',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 3, 
-    title: 'Locksmith assistance', 
-    city: 'San Francisco', 
-    description: 'Change home locks', 
-    datePosted: '2023-10-28', 
-    posterFirstName: 'Alex', 
+  {
+    id: 3,
+    title: 'Locksmith assistance',
+    city: 'San Francisco',
+    description: 'Change home locks',
+    datePosted: new Date('2023-10-28'),
+    posterFirstName: 'Alex',
     skills: ['Locksmith'],
-    estimatedDuration: '1 day'
+    estimatedDuration: '1 day',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 4, 
-    title: 'Urgent plumbing work', 
-    city: 'Chicago', 
-    description: 'Fix a leaky faucet', 
-    datePosted: '2023-10-25', 
-    posterFirstName: 'Marie', 
+  {
+    id: 4,
+    title: 'Urgent plumbing work',
+    city: 'Chicago',
+    description: 'Fix a leaky faucet',
+    datePosted: new Date('2023-10-25'),
+    posterFirstName: 'Marie',
     skills: ['Plumber'],
-    estimatedDuration: '3-4 days'
+    estimatedDuration: '3-4 days',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 5, 
-    title: 'Landscaping the garden', 
-    city: 'Los Angeles', 
-    description: 'Design a garden landscape', 
-    datePosted: '2023-10-22', 
-    posterFirstName: 'Luke', 
+  {
+    id: 5,
+    title: 'Landscaping the garden',
+    city: 'Los Angeles',
+    description: 'Design a garden landscape',
+    datePosted: new Date('2023-10-22'),
+    posterFirstName: 'Luke',
     skills: ['Landscaper'],
-    estimatedDuration: 'less than 1 month'
+    estimatedDuration: 'less than 1 month',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 6, 
-    title: 'Tiling the bathroom', 
-    city: 'San Diego', 
-    description: 'Tile walls and floor', 
-    datePosted: '2023-10-20', 
-    posterFirstName: 'Eva', 
+  {
+    id: 6,
+    title: 'Tiling the bathroom',
+    city: 'San Diego',
+    description: 'Tile walls and floor',
+    datePosted: new Date('2023-10-20'),
+    posterFirstName: 'Eva',
     skills: ['Tiler'],
-    estimatedDuration: '2-3 weeks'
+    estimatedDuration: '2-3 weeks',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 7, 
-    title: 'HVAC maintenance', 
-    city: 'Houston', 
-    description: 'Check and maintain HVAC system', 
-    datePosted: '2023-10-18', 
-    posterFirstName: 'Sarah', 
+  {
+    id: 7,
+    title: 'HVAC maintenance',
+    city: 'Houston',
+    description: 'Check and maintain HVAC system',
+    datePosted: new Date('2023-10-18'),
+    posterFirstName: 'Sarah',
     skills: ['HVAC Technician'],
-    estimatedDuration: 'less than 1 week'
+    estimatedDuration: 'less than 1 week',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 8, 
-    title: 'Home painting', 
-    city: 'Seattle', 
-    description: 'Paint interior walls', 
-    datePosted: '2023-10-15', 
-    posterFirstName: 'Jake', 
+  {
+    id: 8,
+    title: 'Home painting',
+    city: 'Seattle',
+    description: 'Paint interior walls',
+    datePosted: new Date('2023-10-15'),
+    posterFirstName: 'Jake',
     skills: ['Painter'],
-    estimatedDuration: '1-2 months'
+    estimatedDuration: '1-2 months',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 9, 
-    title: 'Flooring work', 
-    city: 'Dallas', 
-    description: 'Install wooden floors', 
-    datePosted: '2023-10-10', 
-    posterFirstName: 'Alice', 
+  {
+    id: 9,
+    title: 'Flooring work',
+    city: 'Dallas',
+    description: 'Install wooden floors',
+    datePosted: new Date('2023-10-10'),
+    posterFirstName: 'Alice',
     skills: ['Flooring Specialist'],
-    estimatedDuration: '2+ months'
+    estimatedDuration: '2+ months',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   },
-  { 
-    id: 10, 
-    title: 'Roofing repair', 
-    city: 'Denver', 
-    description: 'Fix a leak in the roof', 
-    datePosted: '2023-10-05', 
-    posterFirstName: 'Tom', 
+  {
+    id: 10,
+    title: 'Roofing repair',
+    city: 'Denver',
+    description: 'Fix a leak in the roof',
+    datePosted: new Date('2023-10-05'),
+    posterFirstName: 'Tom',
     skills: ['Roofer'],
-    estimatedDuration: '2-3 days'
+    estimatedDuration: '2-3 days',
+    estimatedBudget: '100',
+    numLeadsTotal: "5",
+    numLeadsPurchased: "4"
   }
 ];
 
-const durationToDays = (duration: string) => {
-  switch (duration) {
-    case '1 day': return 1;
-    case '2-3 days': return 3;
-    case '3-4 days': return 4;
-    case 'less than 1 week': return 6;
-    case '1-2 weeks': return 14;
-    case '2-3 weeks': return 21;
-    case 'less than 1 month': return 29;
-    case '1-2 months': return 60;
-    case '2+ months': return 61;
-    default: return null;
-  }
+const durationToDays: { [key: string]: number } = {
+  '1 day': 1,
+  '2-3 days': 3,
+  '3-4 days': 4,
+  'less than 1 week': 6,
+  '1-2 weeks': 14,
+  '2-3 weeks': 21,
+  'less than 1 month': 29,
+  '1-2 months': 60,
+  '2+ months': 61
+};
+
+const daysToDuration: { [key: string]: string } = {
+  '1': '1 day',
+  '3': '2-3 days',
+  '4': '3-4 days',
+  '6': 'less than 1 week',
+  '14': '1-2 weeks',
+  '21': '2-3 weeks',
+  '29': 'less than 1 month',
+  '60': '1-2 months',
+  '61': '2+ months'
 };
 
 const isDurationInRange = (jobDuration: string, minDuration: string, maxDuration: string) => {
-  const jobDays = durationToDays(jobDuration);
-  const minDays = durationToDays(minDuration);
-  const maxDays = durationToDays(maxDuration);
+  const jobDays = durationToDays[jobDuration];
+  const minDays = durationToDays[minDuration];
+  const maxDays = durationToDays[maxDuration];
   if (jobDays == null) {
     return false;
   }
-
   return (minDays === null || jobDays >= minDays) && (maxDays === null || jobDays <= maxDays);
 };
 
@@ -178,15 +221,121 @@ const ViewJobs: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string>('allTime');
   const [minDuration, setMinDuration] = useState<string>('Any');
   const [maxDuration, setMaxDuration] = useState<string>('Any');
-  
+
   const [minDurationOptions, setMinDurationOptions] = useState<string[]>(['Any', ...ESTIMATED_DURATIONS]);
   const [maxDurationOptions, setMaxDurationOptions] = useState<string[]>(['Any', ...ESTIMATED_DURATIONS]);
+  const [moreResultsVisible, setMoreResultsVisible] = useState(true);
+  const [nextPageToken, setNextPageToken] = useState(null)
+  const [resultsLimit, setResultsLimit] = useState(DEFAULT_RESULT_LIMIT)
+  const [jobsShown, setJobsShown] = useState<Job[]>([])
+
+  const populateJobBoard = (jobs: any, moreResults: boolean=false) => {
+    if (jobs == null) {
+      return;
+    }
+    let jobObjects: Job[]= []
+    for (const job of jobs) {
+      const jobObject: Job = 
+      {
+        id: job.id,
+        title: job.title,
+        city: job.city,
+        description: job.description,
+        datePosted: new Date(job.timestamp),
+        posterFirstName: job.firstName,
+        skills: job.skills,
+        estimatedDuration: daysToDuration[job.duration],
+        estimatedBudget: job.budget,
+        numLeadsTotal: job.numLeadsTotal,
+        numLeadsPurchased: job.numLeadsPurchased
+      }
+      jobObjects.push(jobObject)
+    }
+    if (moreResults) {
+      setJobsShown(jobsShown.concat(jobObjects))
+    } else {
+      setJobsShown(jobObjects)
+    }
+    
+  }
+
+  const fetchJobs = async (moreResults: boolean=false) => {
+    try {
+      const url = new URL('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/getJobs');
+  
+      // Add query parameters if they are provided
+      if (nextPageToken && moreResults) {
+        url.searchParams.append('startAfter', nextPageToken);
+      }
+      url.searchParams.append('limit', resultsLimit.toString());
+
+      if (keywordFilter != "") {
+        url.searchParams.append("keywords", keywordFilter);
+      }
+
+      if (cityFilter != "") {
+        url.searchParams.append("city", cityFilter);
+      }
+
+      if (skillFilter.length != 0) {
+        url.searchParams.append("skills", skillFilter.join(","));
+      }
+
+      if (dateFilter != "allTime") {
+        url.searchParams.append("daysSincePosted", dateFilterOptions[dateFilter]!.toString());
+      }
+
+      if (minDuration != "Any") {
+        url.searchParams.append("minDuration", durationToDays[minDuration]!.toString());
+      }
+
+      if (maxDuration != "Any") {
+        url.searchParams.append("maxDuration", durationToDays[maxDuration]!.toString());
+      }
+      console.log(url)
+      const response = await fetch(url);
+  
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log("No more results");
+          setMoreResultsVisible(false);
+          // if moreResults is false, then this was from a search button press. should clear filtered jobs if search gave no results
+          if (!moreResults)
+          {
+            setJobsShown([])
+          }
+        } else {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+      }
+  
+      const jobs = await response.json();
+      console.log(jobs);
+  
+      if (jobs.nextPageToken != null) {
+        setNextPageToken(jobs.nextPageToken);
+        setMoreResultsVisible(true);
+      } else {
+        setMoreResultsVisible(false);
+      }
+  
+      populateJobBoard(jobs.jobs, moreResults);
+  
+    } catch (error) {
+      console.error("Error getting jobs:", error);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchJobs();
+  }, []); // Empty dependency array ensures this runs once on mount
 
   useEffect(() => {
     if (minDuration !== 'Any') {
-      const minDays = durationToDays(minDuration);
+      const minDays = durationToDays[minDuration];
       setMaxDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
-        const days = durationToDays(duration);
+        const days = durationToDays[duration];
         return days === null || days > minDays!;
       })]);
     } else {
@@ -196,9 +345,9 @@ const ViewJobs: React.FC = () => {
 
   useEffect(() => {
     if (maxDuration !== 'Any') {
-      const maxDays = durationToDays(maxDuration);
+      const maxDays = durationToDays[maxDuration];
       setMinDurationOptions(['Any', ...ESTIMATED_DURATIONS.filter(duration => {
-        const days = durationToDays(duration);
+        const days = durationToDays[duration];
         return days === null || days < maxDays!;
       })]);
     } else {
@@ -210,7 +359,7 @@ const ViewJobs: React.FC = () => {
     const rangeValue = dateFilterOptions[range];
     if (rangeValue === null) return true;
 
-    const jobDate = new Date(job.datePosted);
+    const jobDate = job.datePosted;
     const currentDate = new Date();
     const diffTime = Math.abs(currentDate.getTime() - jobDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -226,11 +375,20 @@ const ViewJobs: React.FC = () => {
     }
   };
 
+  const handleSearch = async () => {
+    setNextPageToken(null)
+    fetchJobs()
+  }
+
+  const handleMoreResults = () => {
+    fetchJobs(true)
+  }
+
   const handleSkillRemove = (skillToRemove: string) => {
     setSkillFilter(prev => prev.filter(skill => skill !== skillToRemove));
   };
 
-  const filteredJobs: Job[] = FAKE_JOBS.filter((job: Job) => {
+  const filteredJobs: Job[] = jobsShown.filter((job: Job) => {
     return (
       job.city.toLowerCase().includes(cityFilter.toLowerCase()) &&
       (skillFilter.length === 0 || job.skills.some(skill => skillFilter.includes(skill))) &&
@@ -285,27 +443,29 @@ const ViewJobs: React.FC = () => {
         <div className={styles.filter}>
           <label>Filter by skills needed:</label>
           <select className={styles.skillSelect} onChange={handleSkillSelect} value="">
-              <option value="" disabled>Select a profession</option>
-              <option key={"All"} value="All">All</option>
-              {PROFESSIONS.map(profession => (
+            <option value="" disabled>Select a profession</option>
+            <option key={"All"} value="All">All</option>
+            {PROFESSIONS.map(profession => (
               <option key={profession} value={profession}>
-                  {profession}
+                {profession}
               </option>
-              ))}
+            ))}
           </select>
+        </div>
+        <button className={styles.searchButton} onClick={handleSearch}>Search</button>
+      </div>
+      
+      <div className={styles.filtersPanel}>
+        <div className={styles.selectedSkills}>
+          {skillFilter.map(skill => (
+            <div key={skill} className={styles.skillItem}>
+              {skill}
+              <span className={styles.removeSkill} onClick={() => handleSkillRemove(skill)}>X</span>
+            </div>
+          ))}
         </div>
       </div>
       <div className={styles.filtersPanel}>
-        <div className={styles.selectedSkills}>
-        {skillFilter.map(skill => (
-              <div key={skill} className={styles.skillItem}>
-              {skill}
-              <span className={styles.removeSkill} onClick={() => handleSkillRemove(skill)}>X</span>
-              </div>
-              ))}
-        </div>
-      </div>
-      <div className={styles.filtersPanel}>  
         {/* Filter by Minimum Estimated Duration */}
         <div className={styles.durationFilters}>
           <label>Filter by estimated duration:</label>
@@ -330,40 +490,45 @@ const ViewJobs: React.FC = () => {
             </div>
           </div>
         </div>
-    </div>
-
-
-
-        {/* Job Cards */}
-        <h1>Filtered Jobs:</h1>
-        <div className={styles.jobs}>
-          {filteredJobs.map(job => (
-            <div key={job.id} className={styles.jobCard}>
-              <h2 className={styles.jobTitle}>{job.title}</h2>
-              <div className={styles.jobDetailsPanels}>
-                <div className={styles.jobDetailsPanelLeft}>
-                  <h3>City:</h3>
-                  <p className={styles.jobCity}>{job.city}</p>
-                  <h3>Date posted:</h3>
-                  <p className={styles.jobDate}>{job.datePosted}</p>
-                  <h3>Posted by:</h3>
-                  <p className={styles.jobPoster}>{job.posterFirstName}</p>
-                  <h3>Estimated Duration:</h3>
-                  <p className={styles.jobDuration}>{job.estimatedDuration}</p>
+      </div>
+      {/* Job Cards */}
+      <h1>Filtered Jobs:</h1>
+      <div className={styles.jobs}>
+        {jobsShown.map(job => (
+          <div key={job.id} className={styles.jobCard}>
+            <h2 className={styles.jobTitle}>{job.title}</h2>
+            <div className={styles.jobDetailsPanels}>
+              <div className={styles.jobDetailsPanelLeft}>
+                <h3>City:</h3>
+                <p className={styles.jobCity}>{job.city}</p>
+                <h3>Date posted:</h3>
+                <p className={styles.jobDate}>{job.datePosted.toLocaleString('default', { month: 'long' }) + " " + job.datePosted.getDate() + ", " + job.datePosted.getFullYear()}</p>
+                <h3>Posted by:</h3>
+                <p className={styles.jobPoster}>{job.posterFirstName}</p>
+                <h3>Leads Purchased:</h3>
+                <p className={styles.leads}>{job.numLeadsPurchased + " out of " + job.numLeadsTotal}</p>
+              </div>
+              <div className={styles.jobDetailsPanelRight}>
+                <h3>Description:</h3>
+                <p className={styles.jobDescription}>{job.description}</p>
+                <h3>Skills needed:</h3>
+                <div className={styles.jobSkills}>
+                  {job.skills.map(skill => (
+                    <span key={skill} className={styles.skillItem}>{skill}</span>
+                  ))}
                 </div>
-                <div className={styles.jobDetailsPanelRight}>
-                  <h3>Description:</h3>
-                  <p className={styles.jobDescription}>{job.description}</p>
-                  <h3>Skills needed:</h3>
-                  <div className={styles.jobSkills}>
-                    {job.skills.map(skill => (
-                      <span key={skill} className={styles.skillItem}>{skill}</span>
-                    ))}
-                </div>
-                </div>
+                <h3>Estimated Duration:</h3>
+                <p className={styles.jobDuration}>{job.estimatedDuration}</p>
+                <h3>Estimated Budget:</h3>
+                <p className={styles.jobBudget}>{"$" + job.estimatedBudget}</p>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+      <div className={styles.moreResultsContainer}>
+        {moreResultsVisible && <button className={styles.moreButton} onClick={handleMoreResults}>More Results</button>}
+        {!moreResultsVisible && <h2 className={styles.noResults} >{jobsShown.length ? "No More Results" : "No Results"}</h2>}
       </div>
     </div>
   );

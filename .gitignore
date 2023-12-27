@@ -51,3 +51,6 @@ coverage
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# firebase config
+firebase.config.ts

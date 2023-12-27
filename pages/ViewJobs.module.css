@@ -30,7 +30,8 @@
   min-width: 200px;
 }
 
-.filter input, .filter select {
+.filter input,
+.filter select {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid #ddd;
@@ -91,6 +92,11 @@
   margin: 1rem;
   padding-left: 5%;
   padding-right: 5%;
+  text-align: left;
+}
+
+.jobCard:hover {
+  transform: scale(1.01);
 }
 
 .jobDetailsPanels {
@@ -110,7 +116,12 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.jobTitle, .jobCity, .jobDescription, .jobDate, .jobPoster, .jobDuration {
+.jobTitle,
+.jobCity,
+.jobDescription,
+.jobDate,
+.jobPoster,
+.jobDuration {
   margin-bottom: 0.8rem;
 }
 
@@ -121,13 +132,33 @@
 }
 
 .filterInputPlaceholder {
-  color: black; /* Change this to the desired color */
+  color: black;
+  /* Change this to the desired color */
 }
 
 .filterSelectPlaceholder {
-  color: black; /* Change this to the desired color */
+  color: black;
+  /* Change this to the desired color */
 }
 
+.moreButton, .searchButton {
+  margin-top: 1rem;
+  color: white;
+  font-size: 1.5rem;
+  align-self: center;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  background-color: black
+}
+
+.moreButton:hover, .searchButton:hover {
+  transform: scale(1.05);
+  background-color: rgb(57, 57, 57);
+}
+
+.moreResultsContainer {
+  text-align: center;
+}
 @media only screen and (max-width: 500px) {
   .jobDetailsPanels {
     flex-direction: column;
