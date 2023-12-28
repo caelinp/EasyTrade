@@ -98,6 +98,26 @@ const PostAJob = () => {
     budget: '',
     skills: [],
   });
+  
+  function trimFormData(data: FormData): FormData {
+    return {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim(),
+      address: data.address.trim(),
+      city: data.city.trim(),
+      provinceState: data.provinceState.trim(),
+      country: data.country.trim(),
+      postalCode: data.postalCode.trim(),
+      phoneNumber: data.phoneNumber.trim(),
+      title: data.title.trim(),
+      description: data.description.trim(),
+      duration: data.duration.trim(),
+      budget: data.budget.trim(),
+      skills: data.skills,
+    };
+  }
+  
 
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   
@@ -137,6 +157,7 @@ const PostAJob = () => {
   };
 
   const handleSubmit = async () => {
+    let trimmedFormData = trimFormData(formData)
     try {
       const response = await fetch('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/addJob', {
         method: 'POST',

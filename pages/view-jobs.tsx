@@ -201,7 +201,6 @@ const isDurationInRange = (jobDuration: string, minDuration: string, maxDuration
   return (minDays === null || jobDays >= minDays) && (maxDays === null || jobDays <= maxDays);
 };
 
-
 const dateFilterOptions: { [key: string]: number | null } = {
   'lastDay': 1,
   'lastWeek': 7,
@@ -213,6 +212,12 @@ const dateFilterOptions: { [key: string]: number | null } = {
   'lastYear': 365,
   'allTime': null
 };
+
+function capitalizeFirstLetter(str: string) {
+  if (!str) return str; // Return the original string if it's empty
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 const ViewJobs: React.FC = () => {
   const [cityFilter, setCityFilter] = useState<string>('');
@@ -239,10 +244,10 @@ const ViewJobs: React.FC = () => {
       {
         id: job.id,
         title: job.title,
-        city: job.city,
+        city: capitalizeFirstLetter(job.city),
         description: job.description,
         datePosted: new Date(job.timestamp),
-        posterFirstName: job.firstName,
+        posterFirstName: capitalizeFirstLetter(job.firstName),
         skills: job.skills,
         estimatedDuration: daysToDuration[job.duration],
         estimatedBudget: job.budget,
@@ -270,11 +275,11 @@ const ViewJobs: React.FC = () => {
       url.searchParams.append('limit', resultsLimit.toString());
 
       if (keywordFilter != "") {
-        url.searchParams.append("keywords", keywordFilter);
+        url.searchParams.append("keywords", keywordFilter.trim());
       }
 
       if (cityFilter != "") {
-        url.searchParams.append("city", cityFilter);
+        url.searchParams.append("city", capitalizeFirstLetter(cityFilter).trim());
       }
 
       if (skillFilter.length != 0) {
@@ -380,6 +385,12 @@ const ViewJobs: React.FC = () => {
     fetchJobs()
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const handleMoreResults = () => {
     fetchJobs(true)
   }
@@ -412,6 +423,7 @@ const ViewJobs: React.FC = () => {
             placeholder="Search by keywords"
             value={keywordFilter}
             onChange={e => setKeywordFilter(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
 
@@ -423,6 +435,7 @@ const ViewJobs: React.FC = () => {
             placeholder="Search by City"
             value={cityFilter}
             onChange={e => setCityFilter(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
 

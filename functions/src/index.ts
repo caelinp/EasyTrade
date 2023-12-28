@@ -9,6 +9,7 @@ const NUM_LEADS_INITIAL = 5;
 interface JobSchema {
   address: string;
   city: string;
+  cityLower: string;
   country: string;
   description: string;
   duration: string;
@@ -29,6 +30,7 @@ interface JobSchema {
 const jobSchema: JobSchema = {
   address: "",
   city: "",
+  cityLower: "",
   country: "",
   description: "",
   duration: "",
@@ -78,6 +80,7 @@ app.post("/addJob", async (req, res) => {
 
   const now = admin.firestore.Timestamp.now();
   jobData.timestamp = now;
+  jobData.cityLower = jobData.city.toLocaleLowerCase();
   jobData.numLeadsTotal = (NUM_LEADS_INITIAL).toString();
   jobData.numLeadsPurchased = "0";
 
@@ -103,7 +106,7 @@ app.get("/getJobs", async (req, res) => {
     const daysSincePosted = parseInt(req.query.daysSincePosted as string);
 
     if (city) {
-      query = query.where('city', '==', city);
+      query = query.where('cityLower', '==', city.toLocaleLowerCase());
     }
     if (skills) {
       let skillArray = skills.split(",");
