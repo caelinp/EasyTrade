@@ -112,7 +112,7 @@ const PostAJob = () => {
       phoneNumber: data.phoneNumber.trim(),
       title: data.title.trim(),
       description: data.description.trim(),
-      duration: data.duration.trim(),
+      duration: data.duration,
       budget: data.budget.trim(),
       skills: data.skills,
     };
@@ -164,7 +164,7 @@ const PostAJob = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(trimmedFormData),
       });
 
       if (!response.ok) {
