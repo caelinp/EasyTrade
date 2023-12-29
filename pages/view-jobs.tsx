@@ -465,7 +465,6 @@ const ViewJobs: React.FC = () => {
             ))}
           </select>
         </div>
-        <button className={styles.searchButton} onClick={handleSearch}>Search</button>
       </div>
       
       <div className={styles.filtersPanel}>
@@ -478,6 +477,7 @@ const ViewJobs: React.FC = () => {
           ))}
         </div>
       </div>
+      
       <div className={styles.filtersPanel}>
         {/* Filter by Minimum Estimated Duration */}
         <div className={styles.durationFilters}>
@@ -503,6 +503,8 @@ const ViewJobs: React.FC = () => {
             </div>
           </div>
         </div>
+        <button className={styles.searchButton} onClick={handleSearch}>{"Search🔍"}</button>
+
       </div>
       {/* Job Cards */}
       <h1>Filtered Jobs:</h1>
