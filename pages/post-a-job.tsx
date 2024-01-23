@@ -3,6 +3,24 @@ import { useState } from 'react';
 import styles from './PostAJob.module.css';
 import { useRouter } from 'next/router';  // Import useRouter
 
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: string;
+  city: string;
+  provinceState: string;
+  country: string;
+  postalCode: string;
+  phoneNumber: string;
+  title: string;
+  description: string;
+  duration: string;
+  budget: string;
+  currency: string;
+  skills: string[];
+}
+
 const PROFESSIONS = [
   'Electrician',
   'Carpenter',
@@ -38,23 +56,43 @@ const DURATIONS = [
   '2+ months',
 ];
 
-type FormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  address: string;
-  city: string;
-  provinceState: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
-  title: string;
-  description: string;
-  duration: string;
-  budget: string;
-  skills: string[];
+const ESTIMATED_BUDGETS: string[] = [
+  'Less than 200',
+  '200 - 500',
+  '500 - 1,000',
+  '1,000 - 2,500',
+  '2,500 - 5,000',
+  '5,000 - 10,000',
+  '10,000 - 20,000',
+  'More than 20,000'
+]
 
-}
+const CURRENCY_OPTIONS: string[] = [
+  'CAD $',
+  'USD $'
+]
+
+const budgetRangeToInt: { [key: string]: number } = {
+  'Less than 200': 199,
+  '200 - 500': 500,
+  '500 - 1,000': 1000,
+  '1,000 - 2,500': 2500,
+  '2,500 - 5,000': 5000,
+  '5,000 - 10,000': 10000,
+  '10,000 - 20,000': 20000,
+  'Greater than 20,000': 20001
+};
+
+const intToBudgetRange: { [key: string]: string } = {
+  '199': 'Less than 200',
+  '500': '200 - 500',
+  '1000': '500 - 1,000',
+  '2500': '1,000 - 2,500',
+  '5000': '2,500 - 5,000',
+  '10000': '5,000 - 10,000',
+  '20000': '10,000 - 20,000',
+  '20001': 'Greater than 20,000'
+};
 
 const durationToDays: { [key: string]: number } = {
   '1 day': 1,
@@ -96,6 +134,7 @@ const PostAJob = () => {
     description: '',
     duration: '1',
     budget: '',
+    currency: '',
     skills: [],
   });
   
@@ -113,14 +152,15 @@ const PostAJob = () => {
       title: data.title.trim(),
       description: data.description.trim(),
       duration: data.duration,
-      budget: data.budget.trim(),
+      budget: data.budget,
+      currency: data.currency,
       skills: data.skills,
     };
   }
   
 
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData(prev => ({
@@ -134,6 +174,22 @@ const PostAJob = () => {
     setFormData(prev => ({
       ...prev,
       [name]: durationToDays[value]
+    }));
+  };
+
+  const handleBudgetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: budgetRangeToInt[value]
+    }));
+  };
+
+  const handleCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
@@ -257,9 +313,33 @@ const PostAJob = () => {
         </select>
       </div>
       <div className={styles.formGroup}>
-        <label>Estimated Budget:</label>
-        <input className={styles.input} name="budget" type="number" value={formData.budget} onChange={handleInputChange} required></input>
+      <label htmlFor="budget">Budget:</label>
+      <div className={styles.budgetRow}>
+        <select 
+          name="budget" 
+          id={styles.budgetSelect}
+          className={styles.select}
+          value={intToBudgetRange[formData.budget]}
+          onChange={handleBudgetChange}
+        >
+          {ESTIMATED_BUDGETS.map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+        
+        <select 
+          name="currency" 
+          className={styles.select}
+          id={styles.currencySelect}
+          value={formData.currency}
+          onChange={handleCurrencyChange}
+        >
+          {CURRENCY_OPTIONS.map(option => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
       </div>
+    </div>
 
       <div className={styles.formGroup}>
         <label>Professional Skills Needed:</label>

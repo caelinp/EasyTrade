@@ -14,6 +14,7 @@ interface JobSchema {
   description: string;
   duration: string;
   budget: string;
+  currency: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -35,6 +36,7 @@ const jobSchema: JobSchema = {
   description: "",
   duration: "",
   budget: "",
+  currency: "",
   email: "",
   firstName: "",
   lastName: "",
@@ -55,6 +57,7 @@ interface JobSummarySchema {
   description: string;
   duration: string;
   budget: string;
+  currency: string;
   firstName: string;
   provinceState: string;
   skills: string[];
@@ -143,6 +146,7 @@ app.get("/getJobs", async (req, res) => {
         description: jobData.description,
         duration: jobData.duration,
         budget: jobData.budget,
+        currency: jobData.currency,
         firstName: jobData.firstName,
         provinceState: jobData.provinceState,
         skills: jobData.skills,

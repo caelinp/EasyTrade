@@ -13,6 +13,7 @@ interface Job {
   skills: string[];
   estimatedDuration: string;
   estimatedBudget: string; 
+  currency: string;
   numLeadsTotal: string;
   numLeadsPurchased: string;
 }
@@ -34,138 +35,43 @@ const ESTIMATED_DURATIONS: string[] = [
   '2+ months',
 ];
 
-const FAKE_JOBS: Job[] = [
-  {
-    id: 1,
-    title: 'Electrician needed',
-    city: 'Los Angeles',
-    description: 'Fix some wires',
-    datePosted: new Date('2023-10-30'),
-    posterFirstName: 'John',
-    skills: ['Electrician'],
-    estimatedDuration: '2-3 days',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 2,
-    title: 'Carpenter for furniture',
-    city: 'New York',
-    description: 'Build a table and chairs',
-    datePosted: new Date('2023-10-29'),
-    posterFirstName: 'Jane',
-    skills: ['Carpenter'],
-    estimatedDuration: '1-2 weeks',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 3,
-    title: 'Locksmith assistance',
-    city: 'San Francisco',
-    description: 'Change home locks',
-    datePosted: new Date('2023-10-28'),
-    posterFirstName: 'Alex',
-    skills: ['Locksmith'],
-    estimatedDuration: '1 day',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 4,
-    title: 'Urgent plumbing work',
-    city: 'Chicago',
-    description: 'Fix a leaky faucet',
-    datePosted: new Date('2023-10-25'),
-    posterFirstName: 'Marie',
-    skills: ['Plumber'],
-    estimatedDuration: '3-4 days',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 5,
-    title: 'Landscaping the garden',
-    city: 'Los Angeles',
-    description: 'Design a garden landscape',
-    datePosted: new Date('2023-10-22'),
-    posterFirstName: 'Luke',
-    skills: ['Landscaper'],
-    estimatedDuration: 'less than 1 month',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 6,
-    title: 'Tiling the bathroom',
-    city: 'San Diego',
-    description: 'Tile walls and floor',
-    datePosted: new Date('2023-10-20'),
-    posterFirstName: 'Eva',
-    skills: ['Tiler'],
-    estimatedDuration: '2-3 weeks',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 7,
-    title: 'HVAC maintenance',
-    city: 'Houston',
-    description: 'Check and maintain HVAC system',
-    datePosted: new Date('2023-10-18'),
-    posterFirstName: 'Sarah',
-    skills: ['HVAC Technician'],
-    estimatedDuration: 'less than 1 week',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 8,
-    title: 'Home painting',
-    city: 'Seattle',
-    description: 'Paint interior walls',
-    datePosted: new Date('2023-10-15'),
-    posterFirstName: 'Jake',
-    skills: ['Painter'],
-    estimatedDuration: '1-2 months',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 9,
-    title: 'Flooring work',
-    city: 'Dallas',
-    description: 'Install wooden floors',
-    datePosted: new Date('2023-10-10'),
-    posterFirstName: 'Alice',
-    skills: ['Flooring Specialist'],
-    estimatedDuration: '2+ months',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  },
-  {
-    id: 10,
-    title: 'Roofing repair',
-    city: 'Denver',
-    description: 'Fix a leak in the roof',
-    datePosted: new Date('2023-10-05'),
-    posterFirstName: 'Tom',
-    skills: ['Roofer'],
-    estimatedDuration: '2-3 days',
-    estimatedBudget: '100',
-    numLeadsTotal: "5",
-    numLeadsPurchased: "4"
-  }
-];
+const ESTIMATED_BUDGETS: string[] = [
+  'Less than 200',
+  '200 - 500',
+  '500 - 1,000',
+  '1,000 - 2,500',
+  '2,500 - 5,000',
+  '5,000 - 10,000',
+  '10,000 - 20,000',
+  'More than 20,000'
+]
+
+const CURRENCY_OPTIONS: string[] = [
+  'CAD $',
+  'USD $'
+]
+
+const budgetRangeToInt: { [key: string]: number } = {
+  'Less than 200': 199,
+  '200 - 500': 500,
+  '500 - 1,000': 1000,
+  '1,000 - 2,500': 2500,
+  '2,500 - 5,000': 5000,
+  '5,000 - 10,000': 10000,
+  '10,000 - 20,000': 20000,
+  'Greater than 20,000': 20001
+};
+
+const intToBudgetRange: { [key: string]: string } = {
+  '199': 'Less than 200',
+  '500': '200 - 500',
+  '1000': '500 - 1,000',
+  '2500': '1,000 - 2,500',
+  '5000': '2,500 - 5,000',
+  '10000': '5,000 - 10,000',
+  '20000': '10,000 - 20,000',
+  '20001': 'Greater than 20,000'
+};
 
 const durationToDays: { [key: string]: number } = {
   '1 day': 1,
@@ -213,11 +119,24 @@ const dateFilterOptions: { [key: string]: number | null } = {
   'allTime': null
 };
 
-function capitalizeFirstLetter(str: string) {
+const capitalizeFirstLetter = (str: string) => {
   if (!str) return str; // Return the original string if it's empty
 
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+const formatBudget = (budgetRange: string, currency: string): string  => {
+  // Check if the currency is in the allowed options and remove '$' and trim it
+  if (currency == null) {
+    currency = "CAD $";
+  }
+  // Add '$' in front of numbers and append the formatted currency
+  const formattedBudget = budgetRange.replace(/\b(\d{1,3}(,\d{3})*(\.\d+)?)\b/g, '$$$1') + ' ' + currency.replace('$', '').trim();
+  
+  
+  return formattedBudget;
+}
+
 
 const ViewJobs: React.FC = () => {
   const [cityFilter, setCityFilter] = useState<string>('');
@@ -250,7 +169,8 @@ const ViewJobs: React.FC = () => {
         posterFirstName: capitalizeFirstLetter(job.firstName),
         skills: job.skills,
         estimatedDuration: daysToDuration[job.duration],
-        estimatedBudget: job.budget,
+        estimatedBudget: intToBudgetRange[job.budget],
+        currency: job.currency,
         numLeadsTotal: job.numLeadsTotal,
         numLeadsPurchased: job.numLeadsPurchased
       }
@@ -535,7 +455,7 @@ const ViewJobs: React.FC = () => {
                 <h3>Estimated Duration:</h3>
                 <p className={styles.jobDuration}>{job.estimatedDuration}</p>
                 <h3>Estimated Budget:</h3>
-                <p className={styles.jobBudget}>{"$" + job.estimatedBudget}</p>
+                <p className={styles.jobBudget}>{formatBudget(job.estimatedBudget, job.currency)}</p>
               </div>
             </div>
           </div>

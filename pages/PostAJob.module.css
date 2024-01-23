@@ -102,15 +102,16 @@
   padding: 0.2rem;
   margin-left: 0.5rem;
 }
-/* For Chrome, Safari, Edge, and Opera */
-#budget::-webkit-inner-spin-button,
-#budget::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+
+.budgetRow {
+  display: flex;
+  gap: 0.5rem;
 }
 
-/* For Firefox */
-#budget {
-  background-color: black;
-  -moz-appearance: textfield;
+#budgetSelect {
+  width: 100%;
+}
+
+#currencySelect {
+  width: 25%;
 }
