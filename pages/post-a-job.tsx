@@ -137,7 +137,7 @@ const PostAJob = () => {
     currency: '',
     skills: [],
   });
-  
+
   function trimFormData(data: FormData): FormData {
     return {
       firstName: data.firstName.trim(),
@@ -157,7 +157,7 @@ const PostAJob = () => {
       skills: data.skills,
     };
   }
-  
+
 
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
@@ -241,64 +241,65 @@ const PostAJob = () => {
     <div className={styles.container}>
       <h1 className={styles.createJobHeader}>Create a New Job</h1>
       <div className={styles.formGroup}>
-        <label>First Name:</label>
-        <input className={styles.input} type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+        <label htmlFor={styles.firstName}>First Name:</label>
+        <input className={styles.input} id={styles.firstName} type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Last Name:</label>
-        <input className={styles.input} type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+        <label htmlFor={styles.lastName}>Last Name:</label>
+        <input className={styles.input} id={styles.lastName} type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Email:</label>
-        <input className={styles.input} type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+        <label htmlFor={styles.email}>Email:</label>
+        <input className={styles.input} id={styles.email} type="email" name="email" value={formData.email} onChange={handleInputChange} required autoComplete="email" />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Street Address:</label>
-        <input className={styles.input} type="text" name="address" value={formData.address} onChange={handleInputChange} required />
+        <label htmlFor={styles.address}>Street Address:</label>
+        <input className={styles.input} id={styles.address} type="text" name="address" value={formData.address} onChange={handleInputChange} required autoComplete="street-address" />
       </div>
 
       <div className={styles.formGroup}>
-        <label>City:</label>
-        <input className={styles.input} type="text" name="city" value={formData.city} onChange={handleInputChange} required />
+        <label htmlFor={styles.city}>City:</label>
+        <input className={styles.input} id={styles.city} type="text" name="city" value={formData.city} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Province/State:</label>
-        <input className={styles.input} type="text" name="provinceState" value={formData.provinceState} onChange={handleInputChange} required />
+        <label htmlFor={styles.provinceState}>Province/State:</label>
+        <input className={styles.input} id={styles.provinceState} type="text" name="provinceState" value={formData.provinceState} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Country:</label>
-        <input className={styles.input} type="text" name="country" value={formData.country} onChange={handleInputChange} required />
+        <label htmlFor={styles.country}>Country:</label>
+        <input className={styles.input} id={styles.country} type="text" name="country" value={formData.country} onChange={handleInputChange} required autoComplete="country-name" />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Postal Code:</label>
-        <input className={styles.input} type="text" name="postalCode" value={formData.postalCode} onChange={handleInputChange} required />
+        <label htmlFor={styles.postalCode}>Postal Code:</label>
+        <input className={styles.input} id={styles.postalCode} type="text" name="postalCode" value={formData.postalCode} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Phone Number:</label>
-        <input className={styles.input} type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} required />
+        <label htmlFor={styles.phoneNumber}>Phone Number:</label>
+        <input className={styles.input} id={styles.phoneNumber} type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Job Title:</label>
-        <input className={styles.input} type="text" name="title" value={formData.title} onChange={handleInputChange} required />
+        <label htmlFor={styles.title}>Job Title:</label>
+        <input className={styles.input} id={styles.title} type="text" name="title" value={formData.title} onChange={handleInputChange} required />
       </div>
 
       <div className={styles.formGroup}>
-        <label>Job Description:</label>
-        <textarea className={styles.textarea} name="description" value={formData.description} onChange={handleInputChange} required></textarea>
+        <label htmlFor={styles.description}>Job Description:</label>
+        <textarea className={styles.textarea} id={styles.description} name="description" value={formData.description} onChange={handleInputChange} required></textarea>
       </div>
 
       <div className={styles.formGroup}>
-        <label>Estimated Duration:</label>
+        <label htmlFor={styles.duration}>Estimated Duration:</label>
         <select
           className={styles.select}
+          id={styles.duration}
           name="duration"
           value={daysToDuration[formData.duration]}
           onChange={handleDurationChange}
@@ -312,38 +313,40 @@ const PostAJob = () => {
           ))}
         </select>
       </div>
-      <div className={styles.formGroup}>
-      <label htmlFor="budget">Budget:</label>
-      <div className={styles.budgetRow}>
-        <select 
-          name="budget" 
-          id={styles.budgetSelect}
-          className={styles.select}
-          value={intToBudgetRange[formData.budget]}
-          onChange={handleBudgetChange}
-        >
-          {ESTIMATED_BUDGETS.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
-        
-        <select 
-          name="currency" 
-          className={styles.select}
-          id={styles.currencySelect}
-          value={formData.currency}
-          onChange={handleCurrencyChange}
-        >
-          {CURRENCY_OPTIONS.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-        </select>
+
+      <div className={styles.formGroup} >
+        <label htmlFor={styles.budgetSelect}>Budget:</label>
+        <div className={styles.budgetRow}>
+          <select
+            name="budget"
+            id={styles.budgetSelect}
+            className={styles.select}
+            value={intToBudgetRange[formData.budget]}
+            onChange={handleBudgetChange}
+          >
+            {ESTIMATED_BUDGETS.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+
+          <select
+            name="currency"
+            className={styles.select}
+            id={styles.currencySelect}
+            value={formData.currency}
+            onChange={handleCurrencyChange}
+          >
+            {CURRENCY_OPTIONS.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
       </div>
-    </div>
+
 
       <div className={styles.formGroup}>
-        <label>Professional Skills Needed:</label>
-        <select className={styles.select} onChange={handleSkillSelect} value="">
+        <label htmlFor={styles.skills}>Professional Skills Needed:</label>
+        <select className={styles.select} id={styles.skills} onChange={handleSkillSelect} value="">
           <option value="" disabled>Select a profession</option>
           {PROFESSIONS.map(profession => (
             <option key={profession} value={profession}>
@@ -376,5 +379,6 @@ const PostAJob = () => {
     </div>
   );
 };
+
 
 export default PostAJob;

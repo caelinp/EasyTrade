@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './ViewJobs.module.css';
 
 const DEFAULT_RESULT_LIMIT = 2;
@@ -12,7 +12,7 @@ interface Job {
   posterFirstName: string;
   skills: string[];
   estimatedDuration: string;
-  estimatedBudget: string; 
+  estimatedBudget: string;
   currency: string;
   numLeadsTotal: string;
   numLeadsPurchased: string;
@@ -125,15 +125,15 @@ const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const formatBudget = (budgetRange: string, currency: string): string  => {
+const formatBudget = (budgetRange: string, currency: string): string => {
   // Check if the currency is in the allowed options and remove '$' and trim it
   if (currency == null) {
     currency = "CAD $";
   }
   // Add '$' in front of numbers and append the formatted currency
   const formattedBudget = budgetRange.replace(/\b(\d{1,3}(,\d{3})*(\.\d+)?)\b/g, '$$$1') + ' ' + currency.replace('$', '').trim();
-  
-  
+
+
   return formattedBudget;
 }
 
@@ -153,13 +153,26 @@ const ViewJobs: React.FC = () => {
   const [resultsLimit, setResultsLimit] = useState(DEFAULT_RESULT_LIMIT)
   const [jobsShown, setJobsShown] = useState<Job[]>([])
 
-  const populateJobBoard = (jobs: any, moreResults: boolean=false) => {
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  const populateJobBoard = (jobs: any, moreResults: boolean = false) => {
     if (jobs == null) {
       return;
     }
-    let jobObjects: Job[]= []
+    let jobObjects: Job[] = []
     for (const job of jobs) {
-      const jobObject: Job = 
+      const jobObject: Job =
       {
         id: job.id,
         title: job.title,
@@ -181,13 +194,13 @@ const ViewJobs: React.FC = () => {
     } else {
       setJobsShown(jobObjects)
     }
-    
+
   }
 
-  const fetchJobs = async (moreResults: boolean=false) => {
+  const fetchJobs = async (moreResults: boolean = false) => {
     try {
       const url = new URL('https://us-central1-easytrade-bdab6.cloudfunctions.net/api/getJobs');
-  
+
       // Add query parameters if they are provided
       if (nextPageToken && moreResults) {
         url.searchParams.append('startAfter', nextPageToken);
@@ -219,38 +232,37 @@ const ViewJobs: React.FC = () => {
       }
       console.log(url)
       const response = await fetch(url);
-  
+
       if (!response.ok) {
         if (response.status === 404) {
           console.log("No more results");
           setMoreResultsVisible(false);
           // if moreResults is false, then this was from a search button press. should clear filtered jobs if search gave no results
-          if (!moreResults)
-          {
+          if (!moreResults) {
             setJobsShown([])
           }
         } else {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
       }
-  
+
       const jobs = await response.json();
       console.log(jobs);
-  
+
       if (jobs.nextPageToken != null) {
         setNextPageToken(jobs.nextPageToken);
         setMoreResultsVisible(true);
       } else {
         setMoreResultsVisible(false);
       }
-  
+
       populateJobBoard(jobs.jobs, moreResults);
-  
+
     } catch (error) {
       console.error("Error getting jobs:", error);
     }
   };
-  
+
 
   useEffect(() => {
     fetchJobs();
@@ -386,7 +398,7 @@ const ViewJobs: React.FC = () => {
           </select>
         </div>
       </div>
-      
+
       <div className={styles.filtersPanel}>
         <div className={styles.selectedSkills}>
           {skillFilter.map(skill => (
@@ -397,7 +409,7 @@ const ViewJobs: React.FC = () => {
           ))}
         </div>
       </div>
-      
+
       <div className={styles.filtersPanel}>
         {/* Filter by Minimum Estimated Duration */}
         <div className={styles.durationFilters}>
@@ -430,7 +442,7 @@ const ViewJobs: React.FC = () => {
       <h1>Filtered Jobs:</h1>
       <div className={styles.jobs}>
         {jobsShown.map(job => (
-          <div key={job.id} className={styles.jobCard}>
+          <div key={job.id} className={styles.jobCard} onClick={() => handleJobClick(job)}>
             <h2 className={styles.jobTitle}>{job.title}</h2>
             <div className={styles.jobDetailsPanels}>
               <div className={styles.jobDetailsPanelLeft}>
@@ -465,8 +477,59 @@ const ViewJobs: React.FC = () => {
         {moreResultsVisible && <button className={styles.moreButton} onClick={handleMoreResults}>More Results</button>}
         {!moreResultsVisible && <h2 className={styles.noResults} >{jobsShown.length ? "No More Results" : "No Results"}</h2>}
       </div>
+      {isModalOpen && selectedJob && <JobLeadModal job={selectedJob} onClose={closeModal} />}
     </div>
   );
 };
+
+const JobLeadModal: React.FC<{ job: Job; onClose: () => void; }> = ({ job, onClose }) => {
+  const [email, setEmail] = useState('');
+  const modalContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalContentRef.current && !modalContentRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    // Bind the event listeners
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]); // Dependency array
+
+  return (
+    <div className={styles.modal}>
+      <div className={styles.modalContent}>
+        <h3>Acquire Lead for {job.title}</h3>
+        <p>Do you want to acquire this lead? Information will be sent to your email address.</p>
+        <input
+          type="email"
+          placeholder="Enter your email address"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className={styles.emailInput}
+        />
+        <div className={styles.modalActions}>
+          <button onClick={onClose}>Cancel</button>
+          <button onClick={() => {/* Add logic for acquiring lead */ }}>Acquire Lead</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 export default ViewJobs;
